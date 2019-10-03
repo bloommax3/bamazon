@@ -88,6 +88,32 @@ function addToInventory(){
     })
 }
 
+function viewForSale(){
+    connection.query("SELECT * FROM products", function(err, res) {
+        if (err) throw err;
+        for(let i=0; i<res.length; i++){
+            console.log(res[i].item_id+": "+res[i].product_name+"\n")
+            if(i===res.length-1){
+                finished()
+            }
+        }
+    })
+}
+
+function viewLowInventory(){
+    connection.query("SELECT * FROM products", function(err, res){
+        if (err) throw err;
+        for(let i = 0; i<res.length; i++){
+            if(res[i].stock_quantity<10){
+                console.log(res[i])
+            }
+            if(i===res.length-1){
+                continuer()
+            }
+        }
+    })
+}
+
 function inventoryAdder(){
     inquirer.prompt([
         {
@@ -131,7 +157,22 @@ function continuer(){
             inventoryAdder()
         }
         else{
+            finished()
+        }
+    })
+}
+
+function finished(){
+    inquirer.prompt({
+        name: "else",
+        message: "Would you like to do anything else?",
+        type: "confirm"
+    }).then(function(response){
+        if(response.else===true){
             select()
+        }
+        else{
+            connection.end()
         }
     })
 }

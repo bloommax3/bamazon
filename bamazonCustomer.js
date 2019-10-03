@@ -54,6 +54,10 @@ function select(){
                         continuer()
                     })
                 }
+                else{
+                    console.log("Insufficient quantity!")
+                    continuer()
+                }
             })
         })
     })
