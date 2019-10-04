@@ -84,7 +84,7 @@ function newProduct(){
 function addToInventory(){
     connection.query("SELECT * FROM products", function(err, res) {
         if (err) throw err;
-        console.log(res);
+        tableMaker(res);
         inventoryAdder()
     })
 }
@@ -92,26 +92,16 @@ function addToInventory(){
 function viewForSale(){
     connection.query("SELECT * FROM products", function(err, res) {
         if (err) throw err;
-        for(let i=0; i<res.length; i++){
-            console.log(res[i].item_id+": "+res[i].product_name+"\n")
-            if(i===res.length-1){
-                finished()
-            }
-        }
+        tableMaker(res)
+        finished()
     })
 }
 
 function viewLowInventory(){
-    connection.query("SELECT * FROM products", function(err, res){
+    connection.query("SELECT * FROM products WHERE stock_quantity BETWEEN 0 AND 5", function(err, res){
         if (err) throw err;
-        for(let i = 0; i<res.length; i++){
-            if(res[i].stock_quantity<10){
-                console.log(res[i])
-            }
-            if(i===res.length-1){
-                continuer()
-            }
-        }
+        tableMaker(res)
+        continuer()
     })
 }
 
@@ -176,4 +166,20 @@ function finished(){
             connection.end()
         }
     })
+}
+
+function tableMaker(res){
+    var table = new Table({
+        head: ["ID", "Item", "Department", "Price", "Quantity in Stock", "Products Sold"],
+        colWidths: [5, 25, 20, 10, 20, 17]
+    })
+    for(let n=0; n<res.length; n++){
+        let temp = res[n]
+        table.push(
+            [temp.item_id, temp.product_name, temp.department_name, temp.price, temp.stock_quantity, temp.product_sales]
+        )
+        if(n===res.length-1){
+            console.log(table.toString())
+        }
+    }
 }

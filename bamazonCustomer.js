@@ -23,19 +23,7 @@ connection.connect(function(err) {
 function select(){
     connection.query("SELECT * FROM products", function(err, res){
         if (err) throw err;
-        var table = new Table({
-            head: ["ID", "Item", "Department", "Price", "Quantity in Stock"],
-            colWidths: [5, 25, 20, 10, 20]
-        })
-        for(let n=0; n<res.length; n++){
-            let temp = res[n]
-            table.push(
-                [temp.item_id, temp.product_name, temp.department_name, temp.price, temp.stock_quantity]
-            )
-            if(n===res.length-1){
-                console.log(table.toString())
-            }
-        }
+        tableMaker(res)
         inquirer.prompt([
             { 
                 name: "purchaseId",
@@ -89,4 +77,20 @@ function continuer(){
             select()
         }
     })
+}
+
+function tableMaker(res){
+    var table = new Table({
+        head: ["ID", "Item", "Department", "Price", "Quantity in Stock"],
+        colWidths: [5, 25, 20, 10, 20]
+    })
+    for(let n=0; n<res.length; n++){
+        let temp = res[n]
+        table.push(
+            [temp.item_id, temp.product_name, temp.department_name, temp.price, temp.stock_quantity]
+        )
+        if(n===res.length-1){
+            console.log(table.toString())
+        }
+    }
 }
