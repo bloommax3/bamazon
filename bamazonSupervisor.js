@@ -77,19 +77,22 @@ function newDepartment(){
 }
 
 function totalSalesUpdater(){
-    connection.query("SELECT (department_name, price, product_sales) FROM products", function(err, res){
+    connection.query("SELECT * FROM products", function(err, res){
         if (err) throw err;
         connection.query("SELECT * FROM departments", function(error, result){
             if (error) throw error;
             for(let n=0; n<result.length; n++){
                 for(let i=0; i<res.length; i++){
-                    connection.query("UPDATE * FROM departments SET ? WHERE ?",[
+                    connection.query("UPDATE departments SET ? WHERE ?",[
                         {
-                            total_sales: (parseFloat(res[i].price)*parseFloat(res[i].product_sales))+result[n].total_sales,
+                            total_sales: (parseFloat(res[i].price)*parseFloat(res[i].product_sales))+result[n].total_sales
                         },
-                        res[i].department_name === result[n].department_name
+                        {
+                            department_name: res[i].department_name
+                        }
                     ], function(er){
                         if(er) throw er;
+                        console.log((parseFloat(res[i].price)*parseFloat(res[i].product_sales))+result[n].total_sales)
                         if(n===result.length-1 && i===res.length-1){
                             netRevenueUpdater()
                         }
@@ -104,19 +107,58 @@ function netRevenueUpdater(){
     connection.query("SELECT * FROM departments", function(err, res){
         if(err) throw err;
         for(let i=0; i<res.length; i++){
-            connection.query("UPDATE * FROM departments SET ? WHERE ?",[
+            connection.query("UPDATE departments SET ? WHERE ?",[
                 {
-                    net_revenue: res[i].over_head_costs+res[i].total_sales
+                    net_revenue: parseFloat(res[i].total_sales)-parseFloat(res[i].over_head_costs)
                 },
-                res[i].department_name===departments.department_name
+                {
+                    department_id: i
+                }
             ], function(err){
                 if(err) throw err;
-                departmentViewer()
+                if(i===res.length-1){
+                    departmentViewer()
+                }
             })
         }
     })
 }
 
 function departmentViewer(){
-    
+    connection.query("SELECT * FROM departments", function(err, res1){
+        if(err) throw err;
+        tableMaker(res1)
+    })
+}
+
+function tableMaker(resin){
+    var table = new Table({
+        head: ["ID", "Department", "Overhead Costs", "Total Sales", "Net Income"],
+        colWidths: [5, 25, 20, 10, 20]
+    })
+    for(let n=0; n<resin.length; n++){
+        let temp = resin[n]
+        table.push(
+            [temp.department_id, temp.department_name, temp.over_head_costs, temp.total_sales, temp.net_revenue]
+        )
+        if(n===resin.length-1){
+            console.log(table.toString())
+            continuer()
+        }
+    }
+}
+
+function continuer(){
+    inquirer.prompt({
+        type: "confirm",
+        name: "continue",
+        message: "Would you like to do anything else?"
+    }).then(function(response){
+        if(response.confirm===true){
+            select()
+        }
+        else{
+            connection.end()
+        }
+    })
 }

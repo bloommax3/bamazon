@@ -50,6 +50,12 @@ function select(){
 }
 
 function newProduct(){
+    connection.query("SELECT department_name FROM departments", function(err, res){
+    if(err) throw err;
+    let a = []
+    for(let b=0; b<res.length; b++){
+        a.push(res[b].department_name)
+    }
     inquirer.prompt([
         {
             name: "productName",
@@ -57,7 +63,9 @@ function newProduct(){
         },
         {
             name: "productDepartment",
-            message: "What department is this product in?"
+            type: "list",
+            message: "What department is this product in?",
+            choices: a
         },
         {
             name: "productPrice",
@@ -78,6 +86,7 @@ function newProduct(){
             console.log(res.affectedRows + " product added!\n");
             select()
         })
+    })
     })
 }
 
