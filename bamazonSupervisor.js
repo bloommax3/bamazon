@@ -52,7 +52,7 @@ function newDepartment(){
             message: "What is the overhead cost of the department?"
         }
     ]).then(function(dept){
-        connection.query("SELECT * FROM departments", function(err, res){
+        connection.query("SELECT department_name FROM departments", function(err, res){
             if(err) throw err;
             for(let i=0; i<res.length; i++){
                 if(res[i].department_name!==dept.deptName && i===res.length-1){
@@ -92,7 +92,6 @@ function totalSalesUpdater(){
                         }
                     ], function(er){
                         if(er) throw er;
-                        console.log((parseFloat(res[i].price)*parseFloat(res[i].product_sales))+result[n].total_sales)
                         if(n===result.length-1 && i===res.length-1){
                             netRevenueUpdater()
                         }
@@ -112,7 +111,7 @@ function netRevenueUpdater(){
                     net_revenue: parseFloat(res[i].total_sales)-parseFloat(res[i].over_head_costs)
                 },
                 {
-                    department_id: i
+                    department_id: i+1
                 }
             ], function(err){
                 if(err) throw err;
