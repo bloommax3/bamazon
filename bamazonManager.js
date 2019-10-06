@@ -76,15 +76,26 @@ function newProduct(){
             message: "How many of this product are in stock?"
         }
     ]).then(function(response){
-        connection.query("INSERT INTO products SET ?",{
-            product_name: response.productName,
-            department_name: response.productDepartment,
-            price: response.productPrice,
-            stock_quantity: response.productQuantity
-        },function(err, res){
-            if (err) throw err;
-            console.log(res.affectedRows + " product added!\n");
-            select()
+        connection.query("SELECT product_name FROM products", function(err, data){
+            for(let c = 0; c<data.length; c++){
+                if(data[c].product_name!==response.productName && c==data.length-1){
+                    connection.query("INSERT INTO products SET ?",{
+                        product_name: response.productName,
+                        department_name: response.productDepartment,
+                        price: response.productPrice,
+                        stock_quantity: response.productQuantity
+                    },function(err, res){
+                        if (err) throw err;
+                        console.log(res.affectedRows + " product added!\n");
+                        select()
+                    })
+                }
+                else if(data[c].product_name==response.productName){
+                    console.log("That product already exists")
+                    select()
+                    return;
+                }
+            }
         })
     })
     })

@@ -34,31 +34,43 @@ function select(){
                 message: "How many of this item would you like to buy?"
             }
         ]).then(function(selection){
-            connection.query("SELECT * FROM products WHERE ?",{
-                item_id: selection.purchaseId
-            },function(error, res){
-                if (error) throw error;
-                let quantity = res[0].stock_quantity;
-                let newQuantity = res[0].stock_quantity-selection.purchaseQuantity;
-                let sales = res[0].product_sales+selection.purchaseQuantity;
-                if(quantity>=selection.purchaseQuantity){
-                    connection.query("UPDATE products SET ? WHERE ?",[
-                        {
-                            product_sales: sales,
-                            stock_quantity: newQuantity
-                        },
-                        {
-                            item_id: parseFloat(selection.purchaseId)
+            connection.query("SELECT * FROM products"
+            ,function(error, res){
+                let tester = true;
+                if(error) throw error;
+                for(let d=0; d<res.length; d++){
+                    if(res[d].item_id==selection.purchaseId){
+                        tester = false
+                        let quantity = res[0].stock_quantity;
+                        let newQuantity = res[0].stock_quantity-selection.purchaseQuantity;
+                        let sales = res[0].product_sales+selection.purchaseQuantity;
+                        if(quantity>=selection.purchaseQuantity){
+                            connection.query("UPDATE products SET ? WHERE ?",[
+                            {
+                                product_sales: sales,
+                                stock_quantity: newQuantity
+                            },
+                            {
+                                item_id: parseFloat(selection.purchaseId)
+                            }
+                            ], function(error1){
+                                if (error1) throw error1;
+                                continuer()
+                                return;
+                            })
                         }
-                    ], function(error1){
-                        if (error1) throw error1;
+                        else{
+                            console.log("Insufficient quantity!")
+                            continuer()
+                            return;
+                        }
+                    }
+                    else if(d===res.length-1 && tester === true){
+                        console.log("That product does not exist")
                         continuer()
-                    })
+                    }
                 }
-                else{
-                    console.log("Insufficient quantity!")
-                    continuer()
-                }
+                
             })
         })
     })
