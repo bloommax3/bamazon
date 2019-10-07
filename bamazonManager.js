@@ -77,6 +77,7 @@ function newProduct(){
         }
     ]).then(function(response){
         connection.query("SELECT product_name FROM products", function(err, data){
+            if (err) throw err;
             for(let c = 0; c<data.length; c++){
                 if(data[c].product_name!==response.productName && c==data.length-1){
                     connection.query("INSERT INTO products SET ?",{

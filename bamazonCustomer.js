@@ -41,9 +41,9 @@ function select(){
                 for(let d=0; d<res.length; d++){
                     if(res[d].item_id==selection.purchaseId){
                         tester = false
-                        let quantity = res[0].stock_quantity;
-                        let newQuantity = res[0].stock_quantity-selection.purchaseQuantity;
-                        let sales = res[0].product_sales+selection.purchaseQuantity;
+                        let quantity = res[d].stock_quantity;
+                        let newQuantity = res[d].stock_quantity-parseFloat(selection.purchaseQuantity);
+                        let sales = res[d].product_sales+parseFloat(selection.purchaseQuantity);
                         if(quantity>=selection.purchaseQuantity){
                             connection.query("UPDATE products SET ? WHERE ?",[
                             {
@@ -55,6 +55,7 @@ function select(){
                             }
                             ], function(error1){
                                 if (error1) throw error1;
+                                console.log("Item successfully purchased!")
                                 continuer()
                                 return;
                             })
