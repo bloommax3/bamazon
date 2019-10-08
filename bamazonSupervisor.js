@@ -153,7 +153,7 @@ function continuer(){
         name: "continue",
         message: "Would you like to do anything else?"
     }).then(function(response){
-        if(response.confirm===true){
+        if(response.continue===true){
             select()
         }
         else{
