@@ -10,4 +10,4 @@ As the manager, you can view products for sale, add new items to the inventory, 
 
 As the supervisor, you can see sales data and add departments.
 
-Here is a video of me demonstrating how this all works: 
+Here is a video of me demonstrating how this all works: https://drive.google.com/file/d/1Cad1ML89NpmVaoo4zynKIq74PCMmjhhS/view
